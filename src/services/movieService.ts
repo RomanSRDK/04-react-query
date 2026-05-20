@@ -7,11 +7,18 @@ axios.defaults.baseURL = "https://api.themoviedb.org/3";
 axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
 interface GetMovieRes {
+  page: number;
   results: Movie[];
+  total_pages: number;
 }
 
-export const fetchMovies = async (topic: string): Promise<GetMovieRes> => {
-  const { data } = await axios.get<GetMovieRes>(`/search/movie?query=${topic}`);
+export const fetchMovies = async (
+  topic: string,
+  page: number,
+): Promise<GetMovieRes> => {
+  const { data } = await axios.get<GetMovieRes>(
+    `/search/movie?query=${topic}&page=${page}`,
+  );
 
   return data;
 };
