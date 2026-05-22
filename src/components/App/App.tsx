@@ -17,10 +17,9 @@ import Paginate from "../Paginate/Paginate";
 export default function App() {
   const [topic, setTopic] = useState("");
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["movies", topic, page],
     queryFn: () => fetchMovies(topic, page),
     enabled: topic !== "",
@@ -28,7 +27,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    if (data && !data.results.length) {
+    if (isSuccess && !data.results.length) {
       toast.error("No movies found for your request", {
         style: {
           borderRadius: "10px",
@@ -37,14 +36,12 @@ export default function App() {
         },
       });
     }
-  }, [data]);
+  }, [isSuccess, data]);
 
   //Modal Window
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => setSelectedMovie(null);
   const handleOpenModal = (movie: Movie) => {
     setSelectedMovie(movie);
-    openModal();
   };
   //Modal Window
 
@@ -70,7 +67,7 @@ export default function App() {
           onPageChange={setPage}
         />
       )}
-      {isModalOpen && selectedMovie && (
+      {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={closeModal} />
       )}
     </div>
